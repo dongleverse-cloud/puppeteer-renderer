@@ -2,12 +2,17 @@ const express = require('express');
 const puppeteer = require('puppeteer');
 
 const app = express();
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.text({ limit: '10mb', type: '*/*' }));
 
 app.post('/render', async (req, res) => {
-  let { html, css, width = 1080, height = 1350 } = req.body;
+  let parsed;
+  try {
+    parsed = JSON.parse(req.body);
+  } catch (e) {
+    return res.status(400).json({ error: 'Invalid JSON' });
+  }
 
+  let { html, css, width = 1080, height = 1350 } = parsed;
   width = parseInt(width);
   height = parseInt(height);
 
@@ -20,15 +25,7 @@ app.post('/render', async (req, res) => {
     const page = await browser.newPage();
     await page.setViewport({ width, height, deviceScaleFactor: 2 });
 
-    const fullHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>${css}</style>
-        </head>
-        <body>${html}</body>
-      </html>
-    `;
+    const fullHtml = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}</body></html>`;
 
     await page.setContent(fullHtml, { waitUntil: 'networkidle0' });
     await new Promise(r => setTimeout(r, 1500));
