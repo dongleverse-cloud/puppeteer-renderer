@@ -2,19 +2,14 @@ const express = require('express');
 const puppeteer = require('puppeteer');
 
 const app = express();
-app.use(express.text({ limit: '10mb', type: '*/*' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 app.post('/render', async (req, res) => {
-  let parsed;
-  try {
-    parsed = JSON.parse(req.body);
-  } catch (e) {
-    return res.status(400).json({ error: 'Invalid JSON' });
-  }
-
-  let { html, css, width = 1080, height = 1350 } = parsed;
-  width = parseInt(width);
-  height = parseInt(height);
+  const html = req.body.html || '';
+  const css = req.body.css || '';
+  const width = parseInt(req.body.width) || 1080;
+  const height = parseInt(req.body.height) || 1350;
 
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
