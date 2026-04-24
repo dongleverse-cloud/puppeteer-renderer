@@ -6,6 +6,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 
 app.post('/render', async (req, res) => {
+  console.log('받은 데이터:', JSON.stringify(req.body));
+  
   const { slot, lang, headline, slide2_text, image_url, slide2_image_url } = req.body;
 
   const templates = {
@@ -102,6 +104,7 @@ app.post('/render', async (req, res) => {
     res.set('Content-Type', 'image/jpeg');
     res.send(screenshot);
   } catch (err) {
+    console.log('에러:', err.message);
     res.status(500).json({ error: err.message });
   } finally {
     await browser.close();
