@@ -54,7 +54,7 @@ app.post('/render', async (req, res) => {
           <div class='channel-name'>• ${t.channelName}</div>
         </div>
       </div>`;
-    css = `* { margin: 0; padding: 0; box-sizing: border-box; } body { background: #000; } .card { width: 1080px; height: 1350px; position: relative; overflow: hidden; font-family: ${t.fontFamily}; } .bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; filter: brightness(0.72); } .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.0) 100%); } .content { position: absolute; bottom: 110px; left: 90px; right: 90px; } .top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; } .dot { width: 12px; height: 12px; border-radius: 50%; background: #00e5ff; } .channel { color: #00e5ff; font-size: 36px; font-weight: 700; letter-spacing: 0.03em; } .title { color: #fff; font-size: 88px; font-weight: 800; line-height: 1.25; letter-spacing: -0.02em; word-break: keep-all; white-space: pre-line; } .channel-name { margin-top: 28px; color: rgba(255,255,255,0.6); font-size: 30px; font-weight: 700; }`;
+    css = `* { margin: 0; padding: 0; box-sizing: border-box; } body { background: #000; } .card { width: 1080px; height: 1350px; position: relative; overflow: hidden; font-family: ${t.fontFamily}; } .bg { width: 100%; height: 100%; object-fit: cover; object-position: center top; position: absolute; top: 0; left: 0; filter: brightness(0.72); } .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.0) 100%); } .content { position: absolute; bottom: 110px; left: 90px; right: 90px; } .top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; } .dot { width: 12px; height: 12px; border-radius: 50%; background: #00e5ff; } .channel { color: #00e5ff; font-size: 36px; font-weight: 700; letter-spacing: 0.03em; } .title { color: #fff; font-size: 88px; font-weight: 800; line-height: 1.25; letter-spacing: -0.02em; word-break: keep-all; white-space: pre-line; } .channel-name { margin-top: 28px; color: rgba(255,255,255,0.6); font-size: 30px; font-weight: 700; }`;
   } else if (slot === '2') {
     html = `
       <link href='${t.font}' rel='stylesheet'>
@@ -67,7 +67,7 @@ app.post('/render', async (req, res) => {
           <div class='channel-name'>• ${t.channelName}</div>
         </div>
       </div>`;
-    css = `* { margin: 0; padding: 0; box-sizing: border-box; } body { background: #000; } .card { width: 1080px; height: 1350px; position: relative; overflow: hidden; font-family: ${t.fontFamily}; display: flex; align-items: center; justify-content: center; } .bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; filter: brightness(0.55) blur(20px); transform: scale(1.1); } .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); } .content { position: relative; z-index: 2; padding: 100px 90px; width: 100%; } .top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 60px; } .dot { width: 12px; height: 12px; border-radius: 50%; background: #00e5ff; } .channel { color: #00e5ff; font-size: 36px; font-weight: 700; } .body-text { color: #fff; font-size: 68px; font-weight: 800; line-height: 1.45; word-break: keep-all; white-space: pre-line; } .body-text b { color: #00e5ff; } .channel-name { margin-top: 80px; color: rgba(255,255,255,0.5); font-size: 30px; font-weight: 700; }`;
+    css = `* { margin: 0; padding: 0; box-sizing: border-box; } body { background: #000; } .card { width: 1080px; height: 1350px; position: relative; overflow: hidden; font-family: ${t.fontFamily}; display: flex; align-items: center; justify-content: center; } .bg { width: 100%; height: 100%; object-fit: cover; object-position: center top; position: absolute; top: 0; left: 0; filter: brightness(0.55) blur(20px); transform: scale(1.1); } .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.35); } .content { position: relative; z-index: 2; padding: 100px 90px; width: 100%; } .top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 60px; } .dot { width: 12px; height: 12px; border-radius: 50%; background: #00e5ff; } .channel { color: #00e5ff; font-size: 36px; font-weight: 700; } .body-text { color: #fff; font-size: 68px; font-weight: 800; line-height: 1.45; word-break: keep-all; white-space: pre-line; } .body-text b { color: #00e5ff; } .channel-name { margin-top: 80px; color: rgba(255,255,255,0.5); font-size: 30px; font-weight: 700; }`;
   } else if (slot === '3') {
     html = `
       <link href='${t.font}' rel='stylesheet'>
@@ -97,7 +97,7 @@ app.post('/render', async (req, res) => {
 
     const screenshot = await page.screenshot({
       type: 'jpeg',
-      quality: 95,
+      quality: 100,
       clip: { x: 0, y: 0, width: 1080, height: 1350 }
     });
 
