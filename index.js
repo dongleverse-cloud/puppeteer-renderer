@@ -288,7 +288,21 @@ app.post('/render-all', async (req, res) => {
   if (!rawSlides || !Array.isArray(rawSlides)) return res.status(400).json({ error: 'slides array required' });
 
   // Make.com에서 배열 항목이 문자열로 전달될 경우 자동 파싱
-  const slides = rawSlides.map(slide => typeof slide === 'string' ? JSON.parse(slide) : slide);
+  const slides = rawSlides.flatMap(slide => {
+    if (typeof slide === 'string') {
+      try {
+        const parsed = JSON.parse(slide);
+        return Array.isArray(parsed) ? parsed : [parsed];
+      } catch(e) {
+        try {
+          return JSON.parse('[' + slide + ']');
+        } catch(e2) {
+          return [];
+        }
+      }
+    }
+    return [slide];
+  });
 
   const ch = channels[lang] || channels.ko;
   const browser = await puppeteer.launch({
