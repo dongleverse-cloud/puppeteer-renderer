@@ -5,7 +5,6 @@ const app = express();
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.json({ limit: '50mb' }));
 
-// ─── 채널 설정 ───────────────────────────────────────────────
 const channels = {
   ko: {
     font: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap",
@@ -30,7 +29,6 @@ const channels = {
   }
 };
 
-// ─── 공통 CSS 변수 ────────────────────────────────────────────
 const baseCSS = (fontFamily) => `
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -56,12 +54,9 @@ const baseCSS = (fontFamily) => `
   }
 `;
 
-// ─── 슬라이드 1: 타이틀 (실사 이미지 배경) ─────────────────────
 function slideTitle(ch, data) {
-  // 헤드라인을 강조어(첫 단어 또는 **로 감싼 부분) 처리
   const headline = (data.headline || '').replace(/\*\*(.*?)\*\*/g, '<em>$1</em>');
   const tag = data.tag || '';
-
   return {
     html: `
       <link href='${ch.font}' rel='stylesheet'>
@@ -80,66 +75,22 @@ function slideTitle(ch, data) {
       </div>`,
     css: baseCSS(ch.fontFamily) + `
       .bg-wrap { position: absolute; inset: 0; }
-      .bg-img {
-        width: 100%; height: 100%;
-        object-fit: cover; object-position: center 20%;
-        filter: brightness(0.65);
-      }
-      .bg-overlay {
-        position: absolute; inset: 0;
-        background: linear-gradient(
-          to top,
-          rgba(0,0,0,0.92) 0%,
-          rgba(0,0,0,0.55) 40%,
-          rgba(0,0,0,0.1) 75%,
-          rgba(0,0,0,0.0) 100%
-        );
-      }
-      .top-bar {
-        position: absolute;
-        top: 52px; left: var(--pad); right: var(--pad);
-        display: flex; align-items: center; justify-content: space-between;
-      }
-      .channel-handle {
-        color: var(--white-60);
-        font-size: 28px; font-weight: 500; letter-spacing: 0.04em;
-      }
-      .tag-wrap {
-        position: absolute;
-        top: 50%; left: var(--pad);
-        transform: translateY(-120px);
-      }
-      .tag {
-        display: inline-block;
-        background: var(--accent);
-        color: #000;
-        font-size: 26px; font-weight: 700;
-        padding: 8px 22px;
-        letter-spacing: 0.04em;
-      }
-      .bottom-content {
-        position: absolute;
-        bottom: 100px; left: var(--pad); right: var(--pad);
-      }
-      .headline {
-        color: var(--white);
-        font-size: 96px; font-weight: 900;
-        line-height: 1.2; letter-spacing: -0.02em;
-        word-break: keep-all; white-space: pre-line;
-      }
-      .headline em {
-        color: var(--accent);
-        font-style: normal;
-      }
+      .bg-img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; filter: brightness(0.65); }
+      .bg-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.1) 75%, rgba(0,0,0,0.0) 100%); }
+      .top-bar { position: absolute; top: 52px; left: var(--pad); right: var(--pad); display: flex; align-items: center; justify-content: space-between; }
+      .channel-handle { color: var(--white-60); font-size: 28px; font-weight: 500; letter-spacing: 0.04em; }
+      .tag-wrap { position: absolute; top: 50%; left: var(--pad); transform: translateY(-120px); }
+      .tag { display: inline-block; background: var(--accent); color: #000; font-size: 26px; font-weight: 700; padding: 8px 22px; letter-spacing: 0.04em; }
+      .bottom-content { position: absolute; bottom: 100px; left: var(--pad); right: var(--pad); }
+      .headline { color: var(--white); font-size: 96px; font-weight: 900; line-height: 1.2; letter-spacing: -0.02em; word-break: keep-all; white-space: pre-line; }
+      .headline em { color: var(--accent); font-style: normal; }
     `
   };
 }
 
-// ─── 슬라이드 2+: 텍스트 (blur 배경) ───────────────────────────
 function slideText(ch, data) {
   const text = (data.text || '').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
   const subtitle = data.subtitle || '';
-
   return {
     html: `
       <link href='${ch.font}' rel='stylesheet'>
@@ -156,56 +107,22 @@ function slideText(ch, data) {
       </div>`,
     css: baseCSS(ch.fontFamily) + `
       .bg-wrap { position: absolute; inset: 0; }
-      .bg-img {
-        width: 100%; height: 100%;
-        object-fit: cover; object-position: center;
-        filter: brightness(0.35) blur(28px);
-        transform: scale(1.12);
-      }
-      .bg-overlay {
-        position: absolute; inset: 0;
-        background: rgba(0,0,0,0.25);
-      }
-      .content {
-        position: relative; z-index: 2;
-        padding: 100px var(--pad);
-        width: 100%; height: 100%;
-        display: flex; flex-direction: column; justify-content: center;
-      }
-      .subtitle {
-        color: var(--accent);
-        font-size: 32px; font-weight: 700;
-        letter-spacing: 0.03em;
-        margin-bottom: 36px;
-        text-transform: uppercase;
-      }
-      .body-text {
-        color: var(--white);
-        font-size: 62px; font-weight: 700;
-        line-height: 1.55; word-break: keep-all;
-        white-space: pre-line;
-      }
+      .bg-img { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: brightness(0.35) blur(28px); transform: scale(1.12); }
+      .bg-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.25); }
+      .content { position: relative; z-index: 2; padding: 100px var(--pad); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+      .subtitle { color: var(--accent); font-size: 32px; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 36px; text-transform: uppercase; }
+      .body-text { color: var(--white); font-size: 62px; font-weight: 700; line-height: 1.55; word-break: keep-all; white-space: pre-line; }
       .body-text b { color: var(--accent); font-weight: 900; }
-      .channel-name {
-        margin-top: 70px;
-        color: var(--white-40);
-        font-size: 28px; font-weight: 500;
-      }
+      .channel-name { margin-top: 70px; color: var(--white-40); font-size: 28px; font-weight: 500; }
     `
   };
 }
 
-// ─── 슬라이드: 리스트형 ──────────────────────────────────────────
 function slideList(ch, data) {
   const items = (data.items || []).map((item, i) => {
     const txt = item.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-    return `
-      <div class='list-item'>
-        <div class='num'>${String(i + 1).padStart(2, '0')}</div>
-        <div class='item-text'>${txt}</div>
-      </div>`;
+    return `<div class='list-item'><div class='num'>${String(i + 1).padStart(2, '0')}</div><div class='item-text'>${txt}</div></div>`;
   }).join('');
-
   return {
     html: `
       <link href='${ch.font}' rel='stylesheet'>
@@ -219,56 +136,21 @@ function slideList(ch, data) {
         </div>
       </div>`,
     css: baseCSS(ch.fontFamily) + `
-      .bg {
-        position: absolute; inset: 0;
-        background: linear-gradient(160deg, #060d18 0%, #0a1e2e 55%, #061510 100%);
-      }
-      .accent-line {
-        position: absolute; top: 0; left: 0;
-        width: 6px; height: 100%;
-        background: linear-gradient(to bottom, var(--accent) 0%, transparent 100%);
-      }
-      .content {
-        position: relative; z-index: 2;
-        padding: 90px var(--pad);
-        width: 100%; height: 100%;
-        display: flex; flex-direction: column; justify-content: center;
-      }
-      .subtitle {
-        color: var(--white);
-        font-size: 52px; font-weight: 900;
-        line-height: 1.3; margin-bottom: 64px;
-        word-break: keep-all;
-      }
+      .bg { position: absolute; inset: 0; background: linear-gradient(160deg, #060d18 0%, #0a1e2e 55%, #061510 100%); }
+      .accent-line { position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: linear-gradient(to bottom, var(--accent) 0%, transparent 100%); }
+      .content { position: relative; z-index: 2; padding: 90px var(--pad); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+      .subtitle { color: var(--white); font-size: 52px; font-weight: 900; line-height: 1.3; margin-bottom: 64px; word-break: keep-all; }
       .list { display: flex; flex-direction: column; gap: 40px; }
-      .list-item {
-        display: flex; align-items: flex-start; gap: 32px;
-        padding-bottom: 40px;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-      }
+      .list-item { display: flex; align-items: flex-start; gap: 32px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.08); }
       .list-item:last-child { border-bottom: none; padding-bottom: 0; }
-      .num {
-        color: var(--accent);
-        font-size: 32px; font-weight: 900;
-        min-width: 52px; line-height: 1.5;
-        letter-spacing: 0.02em;
-      }
-      .item-text {
-        color: var(--white);
-        font-size: 44px; font-weight: 700;
-        line-height: 1.45; word-break: keep-all;
-      }
+      .num { color: var(--accent); font-size: 32px; font-weight: 900; min-width: 52px; line-height: 1.5; letter-spacing: 0.02em; }
+      .item-text { color: var(--white); font-size: 44px; font-weight: 700; line-height: 1.45; word-break: keep-all; }
       .item-text b { color: var(--accent); }
-      .channel-name {
-        margin-top: 60px;
-        color: var(--white-40);
-        font-size: 28px; font-weight: 500;
-      }
+      .channel-name { margin-top: 60px; color: var(--white-40); font-size: 28px; font-weight: 500; }
     `
   };
 }
 
-// ─── 슬라이드: 인용구형 ──────────────────────────────────────────
 function slideQuote(ch, data) {
   return {
     html: `
@@ -287,56 +169,21 @@ function slideQuote(ch, data) {
       </div>`,
     css: baseCSS(ch.fontFamily) + `
       .bg-wrap { position: absolute; inset: 0; }
-      .bg-img {
-        width: 100%; height: 100%;
-        object-fit: cover; object-position: center;
-        filter: brightness(0.25) blur(8px);
-        transform: scale(1.05);
-      }
-      .bg-overlay {
-        position: absolute; inset: 0;
-        background: linear-gradient(135deg, rgba(0,20,40,0.7) 0%, rgba(0,0,0,0.5) 100%);
-      }
-      .content {
-        position: relative; z-index: 2;
-        padding: 100px var(--pad);
-        width: 100%; height: 100%;
-        display: flex; flex-direction: column; justify-content: center;
-      }
-      .quote-mark {
-        color: var(--accent);
-        font-size: 200px; font-weight: 900;
-        line-height: 0.7; margin-bottom: 30px;
-        opacity: 0.5;
-      }
-      .quote-text {
-        color: var(--white);
-        font-size: 66px; font-weight: 700;
-        line-height: 1.5; word-break: keep-all;
-        white-space: pre-line; margin-bottom: 48px;
-      }
-      .source {
-        color: var(--accent);
-        font-size: 34px; font-weight: 700;
-      }
-      .channel-name {
-        margin-top: 60px;
-        color: var(--white-40);
-        font-size: 28px; font-weight: 500;
-      }
+      .bg-img { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: brightness(0.25) blur(8px); transform: scale(1.05); }
+      .bg-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,20,40,0.7) 0%, rgba(0,0,0,0.5) 100%); }
+      .content { position: relative; z-index: 2; padding: 100px var(--pad); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+      .quote-mark { color: var(--accent); font-size: 200px; font-weight: 900; line-height: 0.7; margin-bottom: 30px; opacity: 0.5; }
+      .quote-text { color: var(--white); font-size: 66px; font-weight: 700; line-height: 1.5; word-break: keep-all; white-space: pre-line; margin-bottom: 48px; }
+      .source { color: var(--accent); font-size: 34px; font-weight: 700; }
+      .channel-name { margin-top: 60px; color: var(--white-40); font-size: 28px; font-weight: 500; }
     `
   };
 }
 
-// ─── 슬라이드: 데이터/통계형 ────────────────────────────────────
 function slideData(ch, data) {
   const stats = (data.stats || []).map(s => `
-    <div class='stat'>
-      <div class='stat-num'>${s.number}</div>
-      <div class='stat-desc'>${s.desc}</div>
-    </div>
+    <div class='stat'><div class='stat-num'>${s.number}</div><div class='stat-desc'>${s.desc}</div></div>
   `).join('');
-
   return {
     html: `
       <link href='${ch.font}' rel='stylesheet'>
@@ -349,47 +196,18 @@ function slideData(ch, data) {
         </div>
       </div>`,
     css: baseCSS(ch.fontFamily) + `
-      .bg {
-        position: absolute; inset: 0;
-        background: linear-gradient(160deg, #04080f 0%, #081826 100%);
-      }
-      .content {
-        position: relative; z-index: 2;
-        padding: 90px var(--pad);
-        width: 100%; height: 100%;
-        display: flex; flex-direction: column; justify-content: center;
-      }
-      .subtitle {
-        color: var(--white);
-        font-size: 50px; font-weight: 900;
-        line-height: 1.3; margin-bottom: 72px;
-        word-break: keep-all;
-      }
+      .bg { position: absolute; inset: 0; background: linear-gradient(160deg, #04080f 0%, #081826 100%); }
+      .content { position: relative; z-index: 2; padding: 90px var(--pad); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+      .subtitle { color: var(--white); font-size: 50px; font-weight: 900; line-height: 1.3; margin-bottom: 72px; word-break: keep-all; }
       .stats { display: flex; flex-direction: column; gap: 52px; }
-      .stat {
-        padding-left: 44px;
-        border-left: 5px solid var(--accent);
-      }
-      .stat-num {
-        color: var(--accent);
-        font-size: 100px; font-weight: 900;
-        line-height: 1; letter-spacing: -0.02em;
-      }
-      .stat-desc {
-        color: rgba(255,255,255,0.75);
-        font-size: 38px; font-weight: 500;
-        margin-top: 12px; word-break: keep-all;
-      }
-      .channel-name {
-        margin-top: 64px;
-        color: var(--white-40);
-        font-size: 28px; font-weight: 500;
-      }
+      .stat { padding-left: 44px; border-left: 5px solid var(--accent); }
+      .stat-num { color: var(--accent); font-size: 100px; font-weight: 900; line-height: 1; letter-spacing: -0.02em; }
+      .stat-desc { color: rgba(255,255,255,0.75); font-size: 38px; font-weight: 500; margin-top: 12px; word-break: keep-all; }
+      .channel-name { margin-top: 64px; color: var(--white-40); font-size: 28px; font-weight: 500; }
     `
   };
 }
 
-// ─── 슬라이드: 팔로우 유도 (마지막) ─────────────────────────────
 function slideFollow(ch, data) {
   return {
     html: `
@@ -405,46 +223,17 @@ function slideFollow(ch, data) {
         </div>
       </div>`,
     css: baseCSS(ch.fontFamily) + `
-      .bg {
-        position: absolute; inset: 0;
-        background: radial-gradient(ellipse at 30% 40%, #0a2a3a 0%, #040a14 60%, #000 100%);
-      }
-      .noise {
-        position: absolute; inset: 0; opacity: 0.03;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      }
-      .content {
-        position: relative; z-index: 2;
-        padding: 0 var(--pad);
-        width: 100%; height: 100%;
-        display: flex; flex-direction: column; justify-content: center;
-      }
-      .handle {
-        color: var(--accent);
-        font-size: 40px; font-weight: 700;
-        letter-spacing: 0.04em; margin-bottom: 40px;
-      }
-      .divider {
-        width: 60px; height: 4px;
-        background: var(--accent);
-        margin-bottom: 56px;
-      }
-      .msg {
-        color: var(--white);
-        font-size: 80px; font-weight: 900;
-        line-height: 1.3; word-break: keep-all;
-        margin-bottom: 64px;
-      }
-      .cta {
-        color: var(--white-60);
-        font-size: 36px; font-weight: 500;
-        letter-spacing: 0.02em;
-      }
+      .bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 40%, #0a2a3a 0%, #040a14 60%, #000 100%); }
+      .noise { position: absolute; inset: 0; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+      .content { position: relative; z-index: 2; padding: 0 var(--pad); width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+      .handle { color: var(--accent); font-size: 40px; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 40px; }
+      .divider { width: 60px; height: 4px; background: var(--accent); margin-bottom: 56px; }
+      .msg { color: var(--white); font-size: 80px; font-weight: 900; line-height: 1.3; word-break: keep-all; margin-bottom: 64px; }
+      .cta { color: var(--white-60); font-size: 36px; font-weight: 500; letter-spacing: 0.02em; }
     `
   };
 }
 
-// ─── 슬라이드 라우터 ─────────────────────────────────────────────
 function renderSlide(ch, slide) {
   switch (slide.type) {
     case 'title':  return slideTitle(ch, slide);
@@ -457,7 +246,6 @@ function renderSlide(ch, slide) {
   }
 }
 
-// ─── 스크린샷 헬퍼 ───────────────────────────────────────────────
 async function screenshot(html, css) {
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -469,27 +257,21 @@ async function screenshot(html, css) {
     const full = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css}</style></head><body>${html}</body></html>`;
     await page.setContent(full, { waitUntil: 'networkidle0' });
     await new Promise(r => setTimeout(r, 2000));
-    return await page.screenshot({
-      type: 'jpeg', quality: 100,
-      clip: { x: 0, y: 0, width: 1080, height: 1350 }
-    });
+    return await page.screenshot({ type: 'jpeg', quality: 100, clip: { x: 0, y: 0, width: 1080, height: 1350 } });
   } finally {
     await browser.close();
   }
 }
 
-// ─── 기존 단일 슬라이드 엔드포인트 (하위호환) ─────────────────────
 app.post('/render', async (req, res) => {
   console.log('render:', JSON.stringify(req.body).slice(0, 200));
   const { slot, lang, headline, slide2_text, image_url, slide2_image_url } = req.body;
   const ch = channels[lang] || channels.ko;
-
   let slideData;
   if (slot === '1')      slideData = { type: 'title', headline, image_url };
   else if (slot === '2') slideData = { type: 'text', text: slide2_text, image_url: slide2_image_url };
   else if (slot === '3') slideData = { type: 'follow' };
   else return res.status(400).json({ error: 'Invalid slot' });
-
   try {
     const { html, css } = renderSlide(ch, slideData);
     const buf = await screenshot(html, css);
@@ -500,42 +282,33 @@ app.post('/render', async (req, res) => {
   }
 });
 
-// ─── 새 다중 슬라이드 엔드포인트 ────────────────────────────────
-// POST /render-all
-// Body (JSON): { lang: "ko", slides: [ {type, ...}, ... ] }
-// Response: { images: ["base64...", ...] }
-//
-// slide 타입별 필드:
-//   title  : headline, image_url, tag(optional)
-//   text   : text, image_url, subtitle(optional)
-//   list   : items[], subtitle(optional)  — image 불필요
-//   quote  : quote, source(optional), image_url(optional)
-//   data   : stats[{number,desc}], subtitle(optional)
-//   follow : (필드 없음)
 app.post('/render-all', async (req, res) => {
   console.log('render-all:', JSON.stringify(req.body).slice(0, 300));
-  const { lang, slides } = req.body;
-  if (!slides || !Array.isArray(slides)) return res.status(400).json({ error: 'slides array required' });
+  const { lang, slides: rawSlides, image_url } = req.body;
+  if (!rawSlides || !Array.isArray(rawSlides)) return res.status(400).json({ error: 'slides array required' });
+
+  // Make.com에서 배열 항목이 문자열로 전달될 경우 자동 파싱
+  const slides = rawSlides.map(slide => typeof slide === 'string' ? JSON.parse(slide) : slide);
 
   const ch = channels[lang] || channels.ko;
   const browser = await puppeteer.launch({
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     headless: 'new'
   });
-
   try {
     const images = [];
     for (const slide of slides) {
+      // title 슬라이드에 image_url 자동 주입
+      if (slide.type === 'title' && image_url && !slide.image_url) {
+        slide.image_url = image_url;
+      }
       const { html, css } = renderSlide(ch, slide);
       const page = await browser.newPage();
       await page.setViewport({ width: 1080, height: 1350, deviceScaleFactor: 2 });
       const full = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${css}</style></head><body>${html}</body></html>`;
       await page.setContent(full, { waitUntil: 'networkidle0' });
       await new Promise(r => setTimeout(r, 2000));
-      const buf = await page.screenshot({
-        type: 'jpeg', quality: 100,
-        clip: { x: 0, y: 0, width: 1080, height: 1350 }
-      });
+      const buf = await page.screenshot({ type: 'jpeg', quality: 100, clip: { x: 0, y: 0, width: 1080, height: 1350 } });
       images.push(buf.toString('base64'));
       await page.close();
     }
