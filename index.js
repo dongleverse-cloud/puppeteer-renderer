@@ -283,26 +283,50 @@ app.post('/render', async (req, res) => {
 });
 
 app.post('/render-all', async (req, res) => {
-  console.log('render-all:', JSON.stringify(req.body).slice(0, 300));
   const { lang, slides: rawSlides, image_url } = req.body;
+
+  // 상세 디버그 로그
+  console.log('render-all lang:', lang);
+  console.log('render-all rawSlides type:', typeof rawSlides);
+  console.log('render-all rawSlides isArray:', Array.isArray(rawSlides));
+  console.log('render-all rawSlides length:', rawSlides ? rawSlides.length : 'null');
+  if (rawSlides && rawSlides.length > 0) {
+    console.log('render-all slide[0] type:', typeof rawSlides[0]);
+    console.log('render-all slide[0] value:', JSON.stringify(rawSlides[0]).slice(0, 500));
+  }
+
   if (!rawSlides || !Array.isArray(rawSlides)) return res.status(400).json({ error: 'slides array required' });
 
-  // Make.com에서 배열 항목이 문자열로 전달될 경우 자동 파싱
-  const slides = rawSlides.flatMap(slide => {
+  let slides = [];
+  for (const slide of rawSlides) {
     if (typeof slide === 'string') {
+      // 문자열인 경우 파싱 시도
+      const trimmed = slide.trim();
       try {
-        const parsed = JSON.parse(slide);
-        return Array.isArray(parsed) ? parsed : [parsed];
-      } catch(e) {
+        // 단일 객체 시도
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) {
+          slides = slides.concat(parsed);
+        } else {
+          slides.push(parsed);
+        }
+      } catch(e1) {
         try {
-          return JSON.parse('[' + slide + ']');
+          // 배열로 감싸서 시도
+          const parsed = JSON.parse('[' + trimmed + ']');
+          slides = slides.concat(parsed);
         } catch(e2) {
-          return [];
+          console.log('parse error e1:', e1.message);
+          console.log('parse error e2:', e2.message);
+          console.log('failed to parse:', trimmed.slice(0, 200));
         }
       }
+    } else if (typeof slide === 'object' && slide !== null) {
+      slides.push(slide);
     }
-    return [slide];
-  });
+  }
+
+  console.log('render-all parsed slides count:', slides.length);
 
   const ch = channels[lang] || channels.ko;
   const browser = await puppeteer.launch({
@@ -312,7 +336,6 @@ app.post('/render-all', async (req, res) => {
   try {
     const images = [];
     for (const slide of slides) {
-      // title 슬라이드에 image_url 자동 주입
       if (slide.type === 'title' && image_url && !slide.image_url) {
         slide.image_url = image_url;
       }
@@ -328,7 +351,7 @@ app.post('/render-all', async (req, res) => {
     }
     res.json({ images });
   } catch (e) {
-    console.error(e);
+    console.error('render error:', e);
     res.status(500).json({ error: e.message });
   } finally {
     await browser.close();
